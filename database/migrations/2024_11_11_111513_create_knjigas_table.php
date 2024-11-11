@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('knjigas', function (Blueprint $table) {
+        Schema::create('knjige', function (Blueprint $table) {
             $table->id();
+            $table->string('naslov');
+            $table->string('autor');
+            $table->integer('godina_izdanja');
             $table->timestamps();
         });
     }
