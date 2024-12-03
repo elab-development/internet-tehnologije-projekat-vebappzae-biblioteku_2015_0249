@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('iznajmljivanjes', function (Blueprint $table) {
+        Schema::create('iznajmljivanja', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('korisnik_id')->constrained('korisnici')->onDelete('cascade');
+            $table->foreignId('knjiga_id')->constrained('knjige')->onDelete('cascade');
+            $table->date('datum_iznajmljivanja');
+            $table->date('datum_vracanja')->nullable();
             $table->timestamps();
         });
     }
