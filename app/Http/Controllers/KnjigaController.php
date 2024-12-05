@@ -124,4 +124,21 @@ public function updateBook(Request $request, $id)
     return response()->json($knjiga, 200);
 }
 
+public function deleteBook($id)
+{
+    // Pronalaženje knjige prema ID-u
+    $knjiga = Knjiga::find($id);
+
+    // Ako knjiga ne postoji, vraća grešku 404
+    if (!$knjiga) {
+        return response()->json(['message' => 'Knjiga nije pronađena'], 404);
+    }
+
+    // Brisanje knjige
+    $knjiga->delete();
+
+    // Vraćanje odgovora sa statusom 204 (No Content) jer nije potrebno vraćati telo odgovora
+    return response()->json(null, 204);
+}
+
 }
