@@ -15,11 +15,12 @@ Route::apiResource('/iznajmljivanjes', IznajmljivanjeController::class);
 Route::apiResource('/korisniks', KorisnikController::class);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+
 Route::middleware('/auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 Route::get('/all-knjigas', [KnjigaController::class, 'getAllBooks']);
-Route::post('/create-knjiga', [KnjigaController::class, 'createBook']);
-Route::put('/update-knjiga/{id}', [KnjigaController::class, 'updateBook']);
-Route::delete('/delete-knjiga/{id}', [KnjigaController::class, 'deleteBook']);
+Route::middleware('auth:sanctum')->post('/create-knjiga', [KnjigaController::class, 'createBook']);
+Route::middleware('auth:sanctum')->put('/update-knjiga/{id}', [KnjigaController::class, 'updateBook']);
+Route::middleware('auth:sanctum')->delete('/delete-knjiga/{id}', [KnjigaController::class, 'deleteBook']);
 
 
 //Route::get('/knjige', [KnjigaController::class, 'index']);

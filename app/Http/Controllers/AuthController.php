@@ -34,11 +34,30 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // Metod za prijavu korisnika
+   
+    /*class AuthController extends Controller
+{
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('YourAppName')->plainTextToken;
+            return response()->json(['token' => $token]);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+}*/
+// Metod za prijavu korisnika
     public function login(Request $request)
     {
         // Validacija podataka
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
@@ -60,16 +79,29 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('YourAppName')->plainTextToken;
+            return response()->json(['token' => $token]);
+        }
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    // Metod za odjavu korisnika
+   
+    
+ // Metod za odjavu korisnika
     public function logout(Request $request)
     {
+        $request->user()->tokens->each(function ($token) {
+            $token->delete();
+        });
+    
+        return response()->json(['message' => 'Logged out successfully']);
         // Brisanje tokena koji je korisnik koristio za autentifikaciju
-        $request->user()->currentAccessToken()->delete();
+        /*$request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'message' => 'Successfully logged out',
-        ]);
+        ]);*/
     }
 }
