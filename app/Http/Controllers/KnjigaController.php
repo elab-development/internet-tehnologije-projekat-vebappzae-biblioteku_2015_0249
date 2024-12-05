@@ -99,4 +99,29 @@ class KnjigaController extends Controller
     // Vraćanje odgovora sa statusom 201 (Created) i novom knjigom
     return response()->json($knjiga, 201);
 }
+public function updateBook(Request $request, $id)
+{
+    // Pronalaženje knjige prema ID-u
+    $knjiga = Knjiga::find($id);
+
+    // Ako knjiga ne postoji, vraća grešku 404
+    if (!$knjiga) {
+        return response()->json(['message' => 'Knjiga nije pronađena'], 404);
+    }
+
+    // Validacija podataka
+    $validated = $request->validate([
+        'naziv' => 'sometimes|required|string|max:255',
+        'autor' => 'sometimes|required|string|max:255',
+        'godina_izdanja' => 'sometimes|required|integer',
+        'kategorija' => 'sometimes|required|string|max:255',
+    ]);
+
+    // Ažuriranje knjige
+    $knjiga->update($validated);
+
+    // Vraćanje ažurirane knjige
+    return response()->json($knjiga, 200);
+}
+
 }
