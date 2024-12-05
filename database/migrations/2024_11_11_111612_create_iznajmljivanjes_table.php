@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('korisnik_id')->constrained('korisnici')->onDelete('cascade');
             $table->foreignId('knjiga_id')->constrained('knjige')->onDelete('cascade');
-            $table->date('datum_iznajmljivanja');
-            $table->date('datum_vracanja')->nullable();
+            $table->date('pocetak_pretplate');
+            $table->date('kraj_pretplate')->nullable();
+
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('iznajmljivanjes');
+        Schema::dropIfExists('pretplatas');
     }
 };

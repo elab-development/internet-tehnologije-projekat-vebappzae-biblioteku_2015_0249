@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('iznajmljivanje', function (Blueprint $table) {
+        Schema::table('pretplata', function (Blueprint $table) {
                 // Dodavanje stranih ključeva za korisnik_id i knjiga_id
                 $table->foreign('korisnik_id')->references('id')->on('korisnik')->onDelete('cascade');
                 $table->foreign('knjiga_id')->references('id')->on('knjiga')->onDelete('cascade');
     
                 // Dodavanje provere za datum izdavanja i datum vraćanja
                 $table->date('datum_izdavanja')->nullable(false)->change(); // Datum izdavanja ne može biti null
-                $table->date('datum_vracanja')->nullable(); // Datum vraćanja može biti null, ali može imati dodatno logičko ograničenje
+                $table->date('kraj_pretplate')->nullable(); // Datum vraćanja može biti null, ali može imati dodatno logičko ograničenje
     
                 // Logičko ograničenje za datume (ako koristite MySQL sa check constraints)
-                $table->check('datum_vracanja >= datum_izdavanja'); // Datum vraćanja mora biti posle datuma izdavanja
+                $table->check('kraj_pretplate >= datum_izdavanja'); // Datum vraćanja mora biti posle datuma izdavanja
             
         });
     }
@@ -31,13 +31,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('iznajmljivanje', function (Blueprint $table) {
+        Schema::table('pretplata', function (Blueprint $table) {
             // Uklanjanje stranih ključeva
             $table->dropForeign(['korisnik_id']);
             $table->dropForeign(['knjiga_id']);
 
             // Uklanjanje logičkog ograničenja (ako postoji)
-            $table->dropCheck('datum_vracanja >= datum_izdavanja');
+            $table->dropCheck('kraj_pretplate >= datum_izdavanja');
         });
     }
 };

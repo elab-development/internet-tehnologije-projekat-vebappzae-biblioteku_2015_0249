@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 use App\Models\Knjiga;
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+use App\Models\Pretplata;
+
+
 class KnjigaController extends Controller
 {
     // Prikazuje sve knjige
@@ -19,6 +23,7 @@ class KnjigaController extends Controller
 
     public function show(Knjiga $knjiga)
     {
+
         $knjiga = Knjiga::find($id);
         
         if (!$knjiga) {
@@ -140,5 +145,62 @@ public function deleteBook($id)
     // Vraćanje odgovora sa statusom 204 (No Content) jer nije potrebno vraćati telo odgovora
     return response()->json(null, 204);
 }
+public function checkAccessToBook($knjigaId)
+    {
+        $korisnik = auth()->user();
+        $pretplata = $korisnik->pretplate()->latest()->first(); // Uzima poslednju pretplatu korisnika
+
+        if ($pretplata) {
+            $now = Carbon::now();
+            if ($now->between($pretplata->pocetak_pretplate, $pretplata->kraj_pretplate)) {
+                return response()->json([
+                    'message' => 'Dozvoljen pristup svim knjigama',
+                    'knjiga' => Knjiga::find($knjigaId)
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Istekla pretplata, nemate pristup ka celoj knizi'
+                ], 403);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Niste ulogovani, imate ograničen pristup knjigama'
+            ], 403);
+        }
+    }
+    public function checkAccessToBookParts($knjigaId)
+    {
+        $korisnik = auth()->user();
+        
+        // Ako korisnik nije ulogovan
+        if (!$korisnik) {
+            return response()->json([
+                'message' => 'Niste prijavljeni. Pristup je ograničen na delove knjige.'
+            ], 403);
+        }
+
+        $pretplata = $korisnik->pretplate()->latest()->first(); // Uzima poslednju pretplatu korisnika
+
+        if ($pretplata) {
+            $now = Carbon::now();
+            if ($now->between($pretplata->pocetak_pretplate, $pretplata->kraj_pretplate)) {
+                // Ako je korisnik prijavljen i ima aktivnu pretplatu
+                return response()->json([
+                    'message' => 'Pristup celokupnoj knjizi je omogućen.',
+                    'knjiga' => Knjiga::find($knjigaId)
+                ]);
+            } else {
+                // Ako je pretplata istekla
+                return response()->json([
+                    'message' => 'Vaša pretplata je istekla, pristup je ograničen.'
+                ], 403);
+            }
+        } else {
+            // Ako korisnik nema aktivnu pretplatu
+            return response()->json([
+                'message' => 'Nemate aktivnu pretplatu, pristup je ograničen na delove knjige.'
+            ], 403);
+        }
+    }
 
 }

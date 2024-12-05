@@ -9,6 +9,10 @@ use Laravel\Sanctum\HasApiTokens;
 class Korisnik extends Authenticatable
 {
     use HasApiTokens;
+    public function pretplate()
+    {
+        return $this->hasMany(Pretplata::class);
+    }
 }
 
 class Korisnik extends Model

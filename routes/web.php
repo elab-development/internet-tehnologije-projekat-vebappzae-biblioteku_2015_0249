@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KnjigaController;
-use App\Http\Controllers\IznajmljivanjeController;
+use App\Http\Controllers\pretplataController;
 use App\Http\Controllers\KorisnikController;
 
 Route::get('/greeting', function () {
