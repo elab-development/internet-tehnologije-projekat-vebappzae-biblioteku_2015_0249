@@ -17,7 +17,7 @@ class KnjigaController extends Controller
 
 }
 
-    public function show($id)
+    public function show(Knjiga $knjiga)
     {
         $knjiga = Knjiga::find($id);
         
@@ -25,7 +25,8 @@ class KnjigaController extends Controller
             return response()->json(['message' => 'Knjiga nije pronađena'], 404);
         }
 
-        return response()->json($knjiga);
+       // return response()->json($knjiga);
+       return new PostResource($knjiga);
     }
     public function create()
     {
