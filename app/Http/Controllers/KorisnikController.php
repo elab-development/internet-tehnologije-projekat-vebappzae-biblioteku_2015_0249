@@ -14,8 +14,8 @@ class KorisnikController extends Controller
      */
     public function index()
     {
-        $korisnik = Korisnik::all();
-        return $korisnik;
+        
+        return response()->json(Korisnik::all(), 200);
     }
 
     /**
@@ -31,7 +31,17 @@ class KorisnikController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'ime' => 'required|string|max:255',
+            'prezime' => 'required|string|max:255',
+            'email' => 'required|email|unique:korisniks',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $validated['password'] = bcrypt($validated['password']);
+        $korisnik = Korisnik::create($validated);
+
+        return response()->json($korisnik, 201);
     }
 
     /**
@@ -60,7 +70,20 @@ class KorisnikController extends Controller
      */
     public function update(Request $request, Korisnik $korisnik)
     {
-        //
+        $validated = $request->validate([
+            'ime' => 'sometimes|string|max:255',
+            'prezime' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:korisniks,email,' . $korisnik->id,
+            'password' => 'sometimes|string|min:6',
+        ]);
+
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        $korisnik->update($validated);
+
+        return response()->json($korisnik, 200);
     }
 
     /**
@@ -68,6 +91,7 @@ class KorisnikController extends Controller
      */
     public function destroy(Korisnik $korisnik)
     {
-        //
+        $korisnik->delete();
+        return response()->json(['message' => 'Korisnik je obrisan'], 200);
     }
 }
