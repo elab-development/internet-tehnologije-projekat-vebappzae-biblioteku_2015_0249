@@ -6,43 +6,33 @@ use Illuminate\Http\Request;
 
 class RentalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    public function index() {
+    $rentals = Rental::with(['user', 'book'])->get();
+    return response()->json($rentals);
+}
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+public function store(Request $request) {
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'book_id' => 'required|exists:books,id',
+        'rented_at' => 'required|date',
+    ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    $rental = Rental::create($validated);
+    return response()->json($rental, 201);
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+public function update(Request $request, Rental $rental) {
+    $validated = $request->validate([
+        'returned_at' => 'nullable|date',
+    ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    $rental->update($validated);
+    return response()->json($rental);
+}
+
+public function destroy(Rental $rental) {
+    $rental->delete();
+    return response()->json(null, 204);
+}
 }
