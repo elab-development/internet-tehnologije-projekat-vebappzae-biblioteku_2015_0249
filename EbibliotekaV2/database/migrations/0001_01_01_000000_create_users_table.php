@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        $table->id(); // primarni ključ
+        $table->string('name'); // ime korisnika
+        $table->string('email')->unique(); // email korisnika, unique
+        $table->timestamp('email_verified_at')->nullable(); // opcionalno, za verifikaciju
+        $table->string('password'); // lozinka
+        $table->rememberToken(); // token za "remember me" funkcionalnost
+        $table->timestamps(); // created_at i updated_at
+    });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
