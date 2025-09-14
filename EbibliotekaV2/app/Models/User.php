@@ -11,35 +11,26 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Fillable columns (mass assignment).
-     */
     protected $fillable = [
-    'first_name', 'last_name', 'email', 'password', 'birth_year'
-];
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'birth_year',
+        'membership_level'
+    ];
 
-    /**
-     * Hidden fields when returning JSON.
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Casts for special columns.
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'birth_date' => 'date',
-    ];
-
-    /**
-     * Relation: one user can have many subscriptions.
-     */
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
     }
+    public function favoriteBooks()
+{
+    return $this->belongsToMany(Book::class, 'favorite_books', 'user_id', 'book_id')->withTimestamps();
+}
 }
