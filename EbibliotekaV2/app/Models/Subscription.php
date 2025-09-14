@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
-    //protected $fillable = ['user_id','type','status','start_at','end_at','meta'];
+    protected $fillable = [
+    'user_id',
+    'type',
+    'status',
+    'expiration_date',
+];
 
 protected $casts = [
     'meta' => 'array',
