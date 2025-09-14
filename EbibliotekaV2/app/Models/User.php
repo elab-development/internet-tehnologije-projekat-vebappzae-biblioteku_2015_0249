@@ -1,28 +1,45 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
 {
-    public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id(); // primary key
-            $table->string('first_name'); // first name
-            $table->string('last_name');  // last name
-            $table->string('email')->unique(); // unique email
-            $table->timestamp('email_verified_at')->nullable(); // email verification
-            $table->string('password'); // password
-            $table->date('birth_date')->nullable(); // date of birth (optional)
-            $table->rememberToken(); // remember me token
-            $table->timestamps(); // created_at and updated_at
-        });
-    }
+    use HasApiTokens, HasFactory, Notifiable;
 
-    public function down(): void
+    /**
+     * Fillable columns (mass assignment).
+     */
+    protected $fillable = [
+    'first_name', 'last_name', 'email', 'password', 'birth_year'
+];
+
+    /**
+     * Hidden fields when returning JSON.
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Casts for special columns.
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'birth_date' => 'date',
+    ];
+
+    /**
+     * Relation: one user can have many subscriptions.
+     */
+    public function subscriptions()
     {
-        Schema::dropIfExists('users');
+        return $this->hasMany(Subscription::class);
     }
-};
+}
