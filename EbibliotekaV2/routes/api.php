@@ -6,19 +6,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\FavoriteBooksController;
+use App\Http\Controllers\Controller; 
+Route::get('/test', fn() => ['msg' => 'API radi']);
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Ovde registrujemo sve API rute. Sve rute u ovoj datoteci koriste "api"
-| middleware grupu automatski.
-|
-*/
+
+
 
 // ----------------- AUTH -----------------
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

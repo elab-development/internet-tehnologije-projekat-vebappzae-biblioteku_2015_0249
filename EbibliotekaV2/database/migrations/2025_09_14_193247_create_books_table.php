@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('preview_text')->nullable();
             $table->boolean('is_published')->default(true);
             $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
            
         });
     }

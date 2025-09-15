@@ -2,15 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Book extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-    'title','description','author','publication_year','content','preview_text','is_published'
-];
-public function favoredByUsers()
-{
-    return $this->belongsToMany(User::class, 'favorite_books', 'book_id', 'user_id')->withTimestamps();
+        'title',
+        'author',
+        'description',
+        'year',
+        'user_id',
+    ];
+
+    // Veza sa korisnikom koji je dodao knjigu
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
-}
+
