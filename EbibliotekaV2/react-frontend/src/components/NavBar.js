@@ -1,24 +1,31 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "./Button";
 
 const NavBar = ({ user, onLogout }) => {
-  const navigate = useNavigate();
-
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <Link className="navbar-brand" to="/">
-        Digitalna biblioteka
-      </Link>
-      <div className="ml-auto">
-        {user ? (
-          <>
-            <span className="me-2">Zdravo, {user.first_name}</span>
-            <Button text="Logout" onClick={onLogout} />
-          </>
-        ) : (
-          <Button text="Login" onClick={() => navigate("/login")} />
-        )}
+      <div className="container-fluid">
+        <Link className="navbar-brand" to="/">
+          Biblioteka
+        </Link>
+        <div className="d-flex">
+          {user ? (
+            <>
+              <span className="navbar-text me-2">{user.first_name}</span>
+              <Button text="Logout" onClick={onLogout} />
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline-primary me-2">
+                Login
+              </Link>
+              <Link to="/register" className="btn btn-outline-secondary">
+                Register
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
