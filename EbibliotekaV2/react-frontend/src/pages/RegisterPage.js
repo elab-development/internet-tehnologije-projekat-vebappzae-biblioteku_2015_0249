@@ -1,7 +1,7 @@
 // src/pages/RegisterPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { getCsrfCookie } from "../services/api";
+import api from "../services/api"; // više ne uzimamo getCsrfCookie
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 
@@ -18,11 +18,8 @@ export default function RegisterPage() {
         e.preventDefault();
 
         try {
-            // 1. CSRF cookie
-            await getCsrfCookie();
-
-            // 2. Register API
-            await api.post("/register", {
+            // Direktno ka Laravel API-ju
+            await api.post("/api/register", {
                 first_name: first,
                 last_name: last,
                 email,

@@ -15,20 +15,38 @@ class BookController extends Controller
 
     // Prikaz jedne knjige – dostupno svima
     public function show(Book $book)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-  public function show(Book $book)
-{
-    $user = auth()->user();
+        if (!$user || !$user->hasActiveSubscription()) {
+            // Ako nema aktivnu pretplatu → prikaži samo deo sadržaja
+            $book->content = substr($book->content, 0, 10 * 1000); 
+        }
 
-    if(!$user || !$user->hasActiveSubscription()) {
-        // Prikaži samo prvih 10 stranica
-        $book->content = substr($book->content, 0, 10 * 1000); // npr. 1000 karaktera po stranici
+        return response()->json($book);
     }
 
-    return response()->json($book);
+    // Dodavanje nove knjige – samo ulogovani
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'content' => 'required|string',
+            'image' => 'nullable|string',
+        ]);
+
+        $book = Book::create($validated);
+
+        return response()->json($book, 201);
+    }
+
+    // Brisanje knjige – samo ulogovani
+    public function destroy(Book $book)
+    {
+        $book->delete();
+
+        return response()->json(['message' => 'Knjiga obrisana']);
+    }
 }
-
-
-

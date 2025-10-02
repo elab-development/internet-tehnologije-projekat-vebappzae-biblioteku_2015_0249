@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +12,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seed korisnika (ostavi ovo ako želiš default user-a)
+       User::factory()->create([
+    'first_name' => 'Test',
+    'last_name' => 'User',
+    'email' => 'test@example.com',
+    'password' => bcrypt('password'), // obavezno lozinka
+    'birth_year' => 1995, // možeš dodati ili izostaviti
+]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+
+        // ✅ Dodajemo i knjige
+        $this->call([
+            BookSeeder::class,
         ]);
     }
 }
