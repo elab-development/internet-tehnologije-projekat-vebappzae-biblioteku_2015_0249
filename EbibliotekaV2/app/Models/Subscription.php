@@ -10,23 +10,20 @@ class Subscription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'type',
-        'status',
-        'start_at',
-        'end_at',
-        'expiration_date',
-        'meta',
+        'price',
+        'duration_days',
     ];
 
-    protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
-        'meta' => 'array',
-    ];
-
-    public function user()
+    // Jedan plan može imati više korisnika
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
+    }
+
+    // Plan se može povezati sa više knjiga
+    public function books()
+    {
+        return $this->belongsToMany(Book::class, 'book_subscription', 'subscription_id', 'book_id');
     }
 }

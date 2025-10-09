@@ -7,31 +7,50 @@ use App\Models\Subscription;
 
 class SubscriptionController extends Controller
 {
-    // Prikaz pretplata korisnika
     public function index(Request $request)
     {
-        return response()->json($request->user()->subscriptions);
+        return response()->json($request->user()->subscription);
     }
 
-    // Kreiranje pretplate
     public function store(Request $request)
     {
-        $request->validate([
-            'type' => 'required|string',
-            'status' => 'required|string',
-            'start_at' => 'required|date',
-            'end_at' => 'required|date|after:start_at',
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Morate biti prijavljeni da biste se pretplatili.'], 401);
+        }
+
+        $data = $request->validate([
+            'type' => 'required|string|in:monthly,6months,yearly',
         ]);
 
-        $subscription = $request->user()->subscriptions()->create($request->all());
+        $plan = Subscription::where('type', $data['type'])->firstOrFail();
+        $endDate = now()->addDays($plan->duration_days);
 
-        return response()->json($subscription, 201);
+        // ✅ Postavi korisniku novu pretplatu
+        $user->update([
+            'subscription_id' => $plan->id,
+            'subscription_start' => now(),
+            'subscription_end' => $endDate,
+        ]);
+
+        return response()->json([
+            'message' => 'Pretplata uspešno aktivirana.',
+            'subscription' => $plan,
+            'active_until' => $endDate
+        ]);
     }
 
-    // Brisanje pretplate
-    public function destroy(Subscription $subscription)
+    public function destroy(Request $request)
     {
-        $subscription->delete();
-        return response()->json(['message' => 'Subscription deleted']);
+        $user = $request->user();
+
+        $user->update([
+            'subscription_id' => null,
+            'subscription_start' => null,
+            'subscription_end' => null,
+        ]);
+
+        return response()->json(['message' => 'Pretplata ukinuta.']);
     }
 }

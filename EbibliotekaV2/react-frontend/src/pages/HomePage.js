@@ -1,79 +1,61 @@
-// src/pages/HomePage.js
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import BookCard from "../components/BookCard";
 
-function HomePage() {
-  const books = [
-    {
-      id: 1,
-      title: "Na Drini ćuprija",
-      author: "Ivo Andrić",
-      image: "/images/nadrinicuprija.png",
-    },
-    {
-      id: 2,
-      title: "Prokleta Avlija",
-      author: "Ivo Andrić",
-      image: "/images/prokletaavlija.jpg",
-    },
-    {
-      id: 3,
-      title: "Seobe",
-      author: "Miloš Crnjanski",
-      image: "/images/seobe.jpg",
-    },
-    {
-      id: 4,
-      title: "Zona Zamfirova",
-      author: "Stevan Sremac",
-      image: "/images/zonazamfirova.jpg",
-    },
-    {
-      id: 5,
-      title: "Ana Karenjina",
-      author: "Lav Tolstoj",
-      image: "/images/anakarenjina.jpg",
-    },
-    {
-      id: 6,
-      title: "Zločin i kazna",
-      author: "Fjodor Mihailovič Dostojevski",
-      image: "/images/zlocinikazna.jpg",
-    },
-  ];
+export default function HomePage() {
+    const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Biblioteka</h1>
-      <div style={styles.grid}>
-        {books.map((book) => (
-          <BookCard
-            key={book.id}
-            id={book.id} // prosleđuje ID
-            title={book.title}
-            author={book.author}
-            image={book.image}
-          />
-        ))}
-      </div>
-    </div>
-  );
+    useEffect(() => {
+        axios
+            .get("http://127.0.0.1:8000/api/books")
+            .then((res) => {
+                setBooks(res.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Greška pri učitavanju knjiga:", err);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                <div
+                    className="spinner-border text-primary"
+                    role="status"
+                ></div>
+                <p className="mt-3 text-secondary">Učitavanje knjiga...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container py-5">
+            <h1 className="text-center mb-5 text-primary fw-bold">
+                📚 Naše knjige
+            </h1>
+
+            {books.length === 0 ? (
+                <p className="text-center text-muted">Nema dostupnih knjiga.</p>
+            ) : (
+                <div className="row g-4">
+                    {books.map((book) => (
+                        <div
+                            key={book.id}
+                            className="col-12 col-sm-6 col-md-4 col-lg-3"
+                        >
+                            <BookCard
+                                id={book.id}
+                                title={book.title}
+                                author={book.author}
+                                image={book.image}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }
-
-const styles = {
-  container: {
-    padding: "20px",
-  },
-  heading: {
-    textAlign: "center",
-    fontSize: "28px",
-    marginBottom: "30px",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "20px",
-  },
-};
-
-export default HomePage;

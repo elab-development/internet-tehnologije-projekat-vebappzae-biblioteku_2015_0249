@@ -12,7 +12,7 @@ export default function BookCard({ id, title, author, image }) {
                 style={{
                     width: "100%",
                     height: 260,
-                    objectFit: "cover",
+                    objectFit: "contain",
                     borderRadius: 8,
                 }}
             />

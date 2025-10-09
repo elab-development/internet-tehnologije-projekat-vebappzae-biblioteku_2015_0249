@@ -1,56 +1,63 @@
+// src/pages/LoginPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/api"; // koristimo login helper
+import { login, getUser, getCsrfCookie } from "../services/api";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 
 export default function LoginPage({ setUser }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const nav = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    async function handleLogin(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await login({ email, password });
+            setLoading(true);
 
-            if (res.data.token) {
-                localStorage.setItem("auth_token", res.data.token);
+            const res = await login({ email, password });
+            const token =
+                res.data?.token ||
+                res.data?.access_token ||
+                res.data?.meta?.token;
+            if (token) {
+                localStorage.setItem("auth_token", token);
             }
 
-            setUser(res.data.user || res.data);
-            nav("/");
+            const userRes = await getUser();
+            setUser(userRes.data || null);
+
+            navigate("/");
         } catch (err) {
-            console.error("Login error:", err);
-            alert(err?.response?.data?.message || "Greška pri logovanju");
+            console.error(err);
+            alert(err.response?.data?.message || "Greška pri prijavi");
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
         <div
             className="container"
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{ maxWidth: 420, margin: "40px auto" }}
         >
-            <form className="form" onSubmit={handleLogin}>
-                <h2>Login</h2>
+            <h2>Prijava</h2>
+            <form onSubmit={handleSubmit}>
                 <InputField
                     label="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    type="email"
                 />
                 <InputField
                     label="Lozinka"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    type="password"
                 />
-                <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-                    <Button type="submit">Prijavi se</Button>
-                    <Button outline onClick={() => nav("/register")}>
-                        Registracija
-                    </Button>
-                </div>
+                <Button type="submit" disabled={loading}>
+                    {loading ? "Obrada..." : "Prijavi se"}
+                </Button>
             </form>
         </div>
     );

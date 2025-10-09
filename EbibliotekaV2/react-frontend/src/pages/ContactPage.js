@@ -20,7 +20,7 @@ export default function ContactPage() {
     return (
         <div className="container" style={{ maxWidth: 720 }}>
             <h2>Kontakt</h2>
-            <p className="text-muted">Pošaljite pitanje ili prijedlog.</p>
+            <p className="text-muted">Pošaljite pitanje ili predlog.</p>
             <form onSubmit={handleSend}>
                 <InputField
                     label="Ime"

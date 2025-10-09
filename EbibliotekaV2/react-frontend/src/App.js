@@ -8,25 +8,25 @@ import BookPage from "./pages/BookPage";
 import Navbar from "./components/NavBar";
 import ContactPage from "./pages/ContactPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
-import api, { getUser, logoutUser } from "./services/api"; // koristiš getUser() iz api
+import { getUser, logoutUser } from "./services/api";
 
 function App() {
     const [user, setUser] = useState(null);
 
-    // pri pokretanju aplikacije pokušaj učitati ulogovanog korisnika
     useEffect(() => {
         let mounted = true;
         async function loadUser() {
             try {
-                const res = await api.get("/api/user"); // u tvom api.js možda je getUser()
+                const res = await getUser();
                 if (mounted) setUser(res.data || null);
             } catch (e) {
-                // nije ulogovan ili greška
-                setUser(null);
+                if (mounted) setUser(null);
             }
         }
         loadUser();
-        return () => (mounted = false);
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     async function handleLogout() {

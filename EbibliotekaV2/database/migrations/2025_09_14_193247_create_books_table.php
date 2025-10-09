@@ -20,7 +20,7 @@ return new class extends Migration
     $table->longText('content')->nullable();
     $table->text('preview_text')->nullable();
     $table->boolean('is_published')->default(true);
-    $table->string('image')->nullable(); // ✅ dodato zbog seedera
+    $table->string('image')->nullable(); // 
     $table->timestamps();
 
     $table->foreignId('user_id')->constrained()->onDelete('cascade');

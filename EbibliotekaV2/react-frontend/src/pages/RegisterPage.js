@@ -1,7 +1,7 @@
-// src/pages/RegisterPage.jsx
+// src/pages/RegisterPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api"; // više ne uzimamo getCsrfCookie
+import { register } from "../services/api";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 
@@ -18,8 +18,7 @@ export default function RegisterPage() {
         e.preventDefault();
 
         try {
-            // Direktno ka Laravel API-ju
-            await api.post("/api/register", {
+            const res = await register({
                 first_name: first,
                 last_name: last,
                 email,
@@ -28,20 +27,23 @@ export default function RegisterPage() {
                 birth_year: birthYear || null,
             });
 
-            alert("Uspešno registrovan! Sada se prijavi.");
-            nav("/login");
+            // Sačuvaj token u LocalStorage
+            localStorage.setItem("auth_token", res.data.token);
+
+            alert("Uspešno registrovan!");
+            nav("/"); // ili nav("/login") ako želiš da se odmah prijavi
         } catch (err) {
             console.error("Greška pri registraciji:", err);
-            alert(err?.response?.data?.message || "Greška pri registraciji");
+            alert(
+                err?.response?.data?.message ||
+                    "Došlo je do greške pri registraciji."
+            );
         }
     }
 
-    // Funkcija da ograničimo unos samo na cifre i max 4
     function handleBirthYearChange(e) {
-        const value = e.target.value.replace(/\D/g, ""); // ukloni sve što nije broj
-        if (value.length <= 4) {
-            setBirthYear(value);
-        }
+        const value = e.target.value.replace(/\D/g, ""); // samo brojevi
+        if (value.length <= 4) setBirthYear(value);
     }
 
     return (

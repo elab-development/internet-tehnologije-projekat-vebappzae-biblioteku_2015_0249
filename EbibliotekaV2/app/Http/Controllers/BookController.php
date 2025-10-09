@@ -4,29 +4,37 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
+use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-    // Prikaz svih knjiga – dostupno svima
+    // Lista svih knjiga (dostupna svima)
     public function index()
     {
         return response()->json(Book::all());
     }
 
-    // Prikaz jedne knjige – dostupno svima
+    // Prikaz knjige — ceo sadržaj samo za pretplaćene korisnike
     public function show(Book $book)
     {
-        $user = auth()->user();
+        // Pokušaj da uzmeš korisnika iz tokena (čak i bez middleware-a)
+        $user = Auth::guard('sanctum')->user();
+        $isSubscribed = false;
 
-        if (!$user || !$user->hasActiveSubscription()) {
-            // Ako nema aktivnu pretplatu → prikaži samo deo sadržaja
-            $book->content = substr($book->content, 0, 10 * 1000); 
+        if ($user && $user->hasActiveSubscription()) {
+            $isSubscribed = true;
+        } else {
+            // Ako nije pretplaćen — skrati sadržaj
+            $book->content = substr($book->content, 0, 500);
         }
+
+        // Dodaj informaciju o statusu pretplate
+        $book->is_subscribed = $isSubscribed;
 
         return response()->json($book);
     }
 
-    // Dodavanje nove knjige – samo ulogovani
+    //  Dodavanje nove knjige (zaštićeno)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,11 +50,11 @@ class BookController extends Controller
         return response()->json($book, 201);
     }
 
-    // Brisanje knjige – samo ulogovani
+    //  Brisanje knjige (zaštićeno)
     public function destroy(Book $book)
     {
         $book->delete();
 
-        return response()->json(['message' => 'Knjiga obrisana']);
+        return response()->json(['message' => 'Knjiga obrisana.']);
     }
 }
